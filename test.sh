@@ -1,14 +1,21 @@
 #!/usr/bin/bash
 
+exec > >(while IFS= read -r line; do echo "[$(date -R)] $line"; done) 2>&1
+
 set -ex
 
+MANIFEST=manifests/set.yaml
 N_MAX=5
+
+cat $MANIFEST
+
 for N in $(seq 1 $N_MAX);
 do
   echo "# Iteration $N of $N_MAX"
-  oc apply -f manifests/set.yaml
-  oc wait --for jsonpath=.status.availableReplicas=100 -f manifests/set.yaml --timeout 5m
+  oc apply -f $MANIFEST
+  oc wait --for jsonpath=.status.readyReplicas=100 -f $MANIFEST --timeout 5m
   kubectl patch statefulset csi-ctl-load --patch '{"spec": {"replicas": 0}}'
+  oc wait --for jsonpath=.status.replicas=0 -f $MANIFEST --timeout 5m
 done
 
-oc delete -f manifests/set.yaml --wait
+oc delete -f $MANIFEST --wait
