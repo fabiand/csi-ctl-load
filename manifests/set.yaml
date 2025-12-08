@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: csi-ctl-load
+  labels:
+    app: csi-ctl-load
+spec:
+  replicas: 100
+  selector:
+    matchLabels:
+      app: csi-ctl-load
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: "Delete"
+  podManagementPolicy: "Parallel"
+  template:
+    metadata:
+      labels:
+        app: csi-ctl-load
+    spec:
+      containers:
+      - name: ubi
+        # Using UBI 9 from Red Hat's official registry
+        image: registry.access.redhat.com/ubi9/ubi:latest
+        # Crucial: Keeps the container running. Without this, UBI exits immediately.
+        command: ["/bin/sh", "-c", "sleep infinity"]
+        volumeDevices:
+        - name: csi-pvc
+          devicePath: /dev/csi-pvc
+  volumeClaimTemplates:
+  - metadata:
+      name: csi-pvc
+    spec:
+      accessModes: ["ReadWriteMany"]
+      volumeMode: "Block"
+      storageClassName: "ocs-storagecluster-ceph-rbd-virtualization"
+      # Omitted storageClassName to use the cluster's default storage class
+      resources:
+        requests:
+          storage: 1Gi
