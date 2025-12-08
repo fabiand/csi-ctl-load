@@ -1,4 +1,4 @@
-# csi-ctr-load
+# csi-ctl-load
 
 
 # Deploy
