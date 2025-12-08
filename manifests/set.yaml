@@ -17,6 +17,20 @@ spec:
       labels:
         app: csi-ctl-load
     spec:
+      affinity:
+        podAntiAffinity:
+          # PREFERRED: Tries to spread pods across nodes, but will stack if necessary.
+          # Safest option for 100 replicas.
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - csi-ctl-load
+              topologyKey: kubernetes.io/hostname
       containers:
       - name: ubi
         # Using UBI 9 from Red Hat's official registry
