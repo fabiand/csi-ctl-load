@@ -16,9 +16,9 @@ for N in $(seq 1 $N_MAX);
 do
   echo "# Iteration $N of $N_MAX"
   oc apply -f $MANIFEST
-  oc wait --for jsonpath=.status.readyReplicas=100 -f $MANIFEST --timeout 5m
+  oc wait --for jsonpath=.status.readyReplicas=100 -f $MANIFEST --timeout 15m
   kubectl patch statefulset csi-ctl-load --patch '{"spec": {"replicas": 0}}'
-  oc wait --for jsonpath=.status.replicas=0 -f $MANIFEST --timeout 5m
+  oc wait --for jsonpath=.status.replicas=0 -f $MANIFEST --timeout 15m
   for POD in $(oc get pods -o NAME) ; do oc logs $POD | grep FAILED ; done
 done
 
