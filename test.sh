@@ -7,6 +7,9 @@ set -ex
 MANIFEST=manifests/set.yaml
 N_MAX=5
 
+echo "Checking if the relevant SC exists"
+oc get sc ocs-storagecluster-ceph-rbd-virtualization
+
 cat $MANIFEST
 
 for N in $(seq 1 $N_MAX);
