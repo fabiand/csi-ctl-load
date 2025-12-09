@@ -36,7 +36,24 @@ spec:
         # Using UBI 9 from Red Hat's official registry
         image: registry.access.redhat.com/ubi9/ubi:latest
         # Crucial: Keeps the container running. Without this, UBI exits immediately.
-        command: ["/bin/sh", "-c", "sleep infinity"]
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -ex
+            PATTERN=openshift 
+            
+            cd /dev
+            if grep -m1 $PATTERN csi-pvc ;
+            then echo "Pattern is already on disk, only checking"
+            else echo "Pattern is not on disk, writing it ..." ; yes $PATTERN | head -c 900M > csi-pvc ;
+            fi ;
+            ORIG_CK=$(yes $PATTERN | head -c 900M | sha256sum)
+            PVC_CK=$(head -c 900M csi-pvc | sha256sum)
+            if [[ "$ORIG_CK" == "$PVC_CK" ]];
+            then echo "CK OK should $ORIG_CK is $PVC_CK" ;
+            else echo "CK FAILED should $ORIG_CK is $PVC_CK" ;
+            fi ;
+            sleep infinity
         volumeDevices:
         - name: csi-pvc
           devicePath: /dev/csi-pvc

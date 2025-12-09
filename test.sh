@@ -19,6 +19,7 @@ do
   oc wait --for jsonpath=.status.readyReplicas=100 -f $MANIFEST --timeout 5m
   kubectl patch statefulset csi-ctl-load --patch '{"spec": {"replicas": 0}}'
   oc wait --for jsonpath=.status.replicas=0 -f $MANIFEST --timeout 5m
+  for POD in $(oc get pods -o NAME) ; do oc logs $POD | grep FAILED ; done
 done
 
 oc delete -f $MANIFEST --wait
