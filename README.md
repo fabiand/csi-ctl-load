@@ -14,6 +14,13 @@ A a Linux workstation
     #
     $ bash test.sh whatever-customer-storage  # To use a specific storage class
 
+
+## Triggering a corruption
+
+If you want to test that the script works correct, then oyu can force a corruption by running:
+
+    while true ; do oc exec csi-ctl-load-1 -- bash -xc "echo 1 > /dev/csi-pvc ; sha256sum /dev/csi-pvc" ; done
+
 # Monitor
 
     $ watch "oc get -f set.yaml ; oc get pods | head ; oc get pvc | head"
