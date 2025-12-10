@@ -6,7 +6,9 @@
 A a Linux workstation
 
     $ oc login …
-    $ bash test.sh
+    $ bash test.sh  # Using default storage class
+    #
+    $ bash test.sh whatever-customer-storage  # To use a specific storage class
 
 # Monitor
 

@@ -6,17 +6,18 @@ set -ex
 
 MANIFEST=manifests/set.yaml
 N_MAX=5
+SC=${1:-ocs-storagecluster-ceph-rbd-virtualization}
 
-echo "Checking if the relevant SC exists"
-oc get sc ocs-storagecluster-ceph-rbd-virtualization
+echo "Checking if the relevant SC '$SC' exists"
+oc get sc $SC
 
 cat $MANIFEST
 
 for N in $(seq 1 $N_MAX);
 do
   echo "# Iteration $N of $N_MAX"
-  oc apply -f $MANIFEST
-  EXPECTED_REPLICA_COUNT=$(oc get -o jsonpath='{.status.replicas}' -f $MANIFEST)
+  sed "s/storageClassName:.*/storageClassName: \"$SC\"/" $MANIFEST | oc apply -f -
+  EXPECTED_REPLICA_COUNT=$(oc get -o jsonpath='{.spec.replicas}' -f $MANIFEST)
   oc wait --for jsonpath=.status.readyReplicas=$EXPECTED_REPLICA_COUNT -f $MANIFEST --timeout 15m
   oc get pods -o NAME | xargs -P 5 -i -- bash -c "oc logs {} | grep -s \"CK FAILED\" && { echo CORRUPTION DETECTED by pod {} ; oc logs {} | sed \"s/^/> /\" ; }" || :
   kubectl patch statefulset csi-ctl-load --patch '{"spec": {"replicas": 0}}'
