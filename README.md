@@ -1,9 +1,12 @@
 # csi-ctl-load
 
 
-# Deploy
+# Run
 
-    $ oc apply -f manifests/set.yaml
+A a Linux workstation
+
+    $ oc login …
+    $ bash test.sh
 
 # Monitor
 
