@@ -34,3 +34,7 @@ See PVs getting created
 Then monitor the waves of disks per node
 
     sum(node_disk_info)
+
+# Related
+
+- https://gist.github.com/akalenyu/00f51e4608912b4672f3e26d36b9e202
