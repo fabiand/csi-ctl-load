@@ -31,6 +31,7 @@ spec:
                   values:
                   - csi-ctl-load
               topologyKey: kubernetes.io/hostname
+      terminationGracePeriodSeconds: 0
       containers:
       - name: ubi
         # Using UBI 9 from Red Hat's official registry
@@ -43,17 +44,21 @@ spec:
             PATTERN=openshift 
             
             cd /dev
-            if grep -m1 $PATTERN csi-pvc ;
+            if grep -m1 "$PATTERN" csi-pvc ;
             then echo "Pattern is already on disk, only checking"
             else echo "Pattern is not on disk, writing it ..." ; yes $PATTERN | head -c 900M > csi-pvc ;
             fi ;
             ORIG_CK=$(yes $PATTERN | head -c 900M | sha256sum)
-            PVC_CK=$(head -c 900M csi-pvc | sha256sum)
-            if [[ "$ORIG_CK" == "$PVC_CK" ]];
-            then echo "CK OK should $ORIG_CK is $PVC_CK" ;
-            else echo "CK FAILED should $ORIG_CK is $PVC_CK" ;
-            fi ;
-            sleep infinity
+            for N in 1 2 3 ;
+            do
+              PVC_CK=$(head -c 900M csi-pvc | sha256sum)
+              if [[ "$ORIG_CK" == "$PVC_CK" ]];
+              then echo "CK OK should $ORIG_CK is $PVC_CK" ;
+              else echo "CK FAILED should $ORIG_CK is $PVC_CK" ;
+              fi ;
+              sleep 10
+            done
+            sleep inf
         volumeDevices:
         - name: csi-pvc
           devicePath: /dev/csi-pvc
