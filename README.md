@@ -1,5 +1,7 @@
 # csi-ctl-load
 
+This will create N pods with N PVCs requetsing fresh 1GB PVs.
+Primary prupose is to trigger CSI control plane calls, and LUN path map/unmapping on the node level.
 
 # Run
 
