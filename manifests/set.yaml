@@ -5,7 +5,7 @@ metadata:
   labels:
     app: csi-ctl-load
 spec:
-  replicas: 100
+  replicas: 10
   selector:
     matchLabels:
       app: csi-ctl-load
