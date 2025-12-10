@@ -3,6 +3,8 @@
 This will create N pods with N PVCs requetsing fresh 1GB PVs.
 Primary prupose is to trigger CSI control plane calls, and LUN path map/unmapping on the node level.
 
+After the test, the output of `test.sh` should not include `CORRUPTION DETECTED`. if it does, then some corruption of the underlying PVs happened. Unless there is a bug in this script.
+
 # Run
 
 A a Linux workstation
