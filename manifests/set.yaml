@@ -5,7 +5,7 @@ metadata:
   labels:
     app: csi-ctl-load
 spec:
-  replicas: 100
+  replicas: 10
   selector:
     matchLabels:
       app: csi-ctl-load
@@ -46,7 +46,7 @@ spec:
             cd /dev
             if grep -m1 "$PATTERN" csi-pvc ;
             then echo "Pattern is already on disk, only checking"
-            else echo "Pattern is not on disk, writing it ..." ; yes $PATTERN | head -c 900M > csi-pvc ;
+            else echo "Pattern is not on disk, writing it ..." ; yes $PATTERN | head -c 900M | dd oflag=nonblock of=csi-pvc ;
             fi ;
             ORIG_CK=$(yes $PATTERN | head -c 900M | sha256sum)
             for N in 1 2 3 ;
@@ -72,4 +72,4 @@ spec:
       # Omitted storageClassName to use the cluster's default storage class
       resources:
         requests:
-          storage: 1Gi
+          storage: 20Gi
