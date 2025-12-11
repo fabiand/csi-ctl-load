@@ -10,9 +10,17 @@ After the test, the output of `test.sh` should not include `CORRUPTION DETECTED`
 A a Linux workstation
 
     $ oc login …
-    $ bash test.sh  # Using default storage class
-    #
-    $ bash test.sh whatever-customer-storage  # To use a specific storage class
+    $ oc new-project load-test
+    Now using project "load-test" on server ...
+    ...
+
+    # Using the clusters default storage class
+    $ bash test.sh
+
+    # OR
+
+    # To use a specific storage class
+    $ bash test.sh whatever-customer-storage
 
 
 ## Triggering a corruption
